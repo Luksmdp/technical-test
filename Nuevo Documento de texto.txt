@@ -9,7 +9,7 @@ VALUES
 (1, '2020-06-15 16:00:00', '2020-12-31 23:59:59', 35455, 1, 38.95, 'EUR');
 
 ------
-
+w
 -añadir logs @Slf4j
 -Pruebas unitarias y de integración:
 Escribe pruebas unitarias para el servicio y el repositorio.

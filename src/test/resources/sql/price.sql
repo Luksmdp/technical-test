@@ -1,9 +1,4 @@
---Brand
-INSERT INTO brand (name) VALUES ('ZARA');
---Currency
-INSERT INTO currency (code, name) VALUES ('EUR', 'EURO');
---Product
-INSERT INTO product (id, name) VALUES (35455, 'ExampleProduct');
+DROP TABLE price IF EXISTS CASCADE;
 --Price
 INSERT INTO price (brand_id, product_id, currency_code, start_date, end_date, priority, price)
 VALUES

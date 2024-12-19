@@ -22,13 +22,13 @@ class PriceIntegrationTest {
 
     @Test
     void testCaseWithRealData() throws Exception {
-        mockMvc.perform(get("/api/prices")
+        mockMvc.perform(get("/api/v1/prices")
                         .param("applicationDate", "2020-06-14T10:00:00")
                         .param("productId", "35455")
                         .param("brandId", "1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Price found successfully"))
+                .andExpect(jsonPath("$.message").value("Price found correctly"))
                 .andExpect(jsonPath("$.data.productId").value(35455))
                 .andExpect(jsonPath("$.data.applicationDate").value("2020-06-14 10:00:00"))
                 .andExpect(jsonPath("$.data.brandId").value(1))

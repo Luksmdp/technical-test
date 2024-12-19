@@ -66,7 +66,7 @@ class PriceServiceImplTest {
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals("price found correctly", response.getBody().getMessage());
+        assertEquals("Price found correctly", response.getBody().getMessage());
         assertNotNull(response.getBody().getData());
         assertEquals(mockPrice.getProduct().getId(), response.getBody().getData().getProductId());
         assertEquals(mockPrice.getBrand().getId(), response.getBody().getData().getBrandId());

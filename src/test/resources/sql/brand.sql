@@ -1,0 +1,3 @@
+DROP TABLE brands IF EXISTS CASCADE;
+--Brand
+INSERT INTO brand (name) VALUES ('ZARA');

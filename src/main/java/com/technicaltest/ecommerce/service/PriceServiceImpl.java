@@ -63,6 +63,6 @@ public class PriceServiceImpl implements PriceService {
                 priceResponseDto.getPriceListId(), priceResponseDto.getFinalPrice(), priceResponseDto.getApplicationDate());
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(new ApiResponse<>("price found correctly",priceResponseDto));
+                .body(new ApiResponse<>("Price found correctly",priceResponseDto));
     }
 }
