@@ -44,9 +44,8 @@ class PriceControllerTest {
                 38.95
         );
 
-        ApiResponse<PriceResponseDto> apiResponse = new ApiResponse<>("Price found successfully", responseDto);
 
-        when(priceService.findPrice(any(PriceRequestDto.class))).thenReturn(ResponseEntity.ok(apiResponse));
+        when(priceService.findPrice(any(PriceRequestDto.class))).thenReturn(responseDto);
 
         // Act & Assert
         mockMvc.perform(get(BASE_URL)
@@ -55,7 +54,7 @@ class PriceControllerTest {
                         .param("brandId", "1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Price found successfully"))
+                .andExpect(jsonPath("$.message").value("Price found correctly"))
                 .andExpect(jsonPath("$.data.productId").value(35455))
                 .andExpect(jsonPath("$.data.applicationDate").value("2020-06-15 21:00:00"))
                 .andExpect(jsonPath("$.data.brandId").value(1))
@@ -74,9 +73,8 @@ class PriceControllerTest {
                 38.95
         );
 
-        ApiResponse<PriceResponseDto> apiResponse = new ApiResponse<>("Price found successfully", responseDto);
 
-        when(priceService.findPrice(any(PriceRequestDto.class))).thenReturn(ResponseEntity.ok(apiResponse));
+        when(priceService.findPrice(any(PriceRequestDto.class))).thenReturn(responseDto);
 
         mockMvc.perform(get(BASE_URL)
                         .param("applicationDate", "2020-06-14T10:00:00")
@@ -84,7 +82,7 @@ class PriceControllerTest {
                         .param("brandId", "1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Price found successfully"))
+                .andExpect(jsonPath("$.message").value("Price found correctly"))
                 .andExpect(jsonPath("$.data.productId").value(35455))
                 .andExpect(jsonPath("$.data.applicationDate").value("2020-06-15 21:00:00"))
                 .andExpect(jsonPath("$.data.brandId").value(1))

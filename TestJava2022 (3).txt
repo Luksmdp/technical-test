@@ -43,3 +43,8 @@ Se valorará:
 Diseño y construcción del servicio.
 Calidad de Código.
 Resultados correctos en los test.
+
+assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("Price found correctly", response.getBody().getMessage());
+        assertNotNull(response.getBody().getData());

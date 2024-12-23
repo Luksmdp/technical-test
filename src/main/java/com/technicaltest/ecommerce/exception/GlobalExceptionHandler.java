@@ -7,6 +7,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,15 +15,17 @@ import java.util.Map;
 @ControllerAdvice
 
 public class GlobalExceptionHandler {
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach(error -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<String> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        String parameterName = ex.getName();
+        String requiredType;
+        try {
+            requiredType = ex.getRequiredType().getSimpleName();
+        } catch (NullPointerException e) {
+            requiredType = "unknown type";
+        }
+        String message = String.format("The parameter '%s' must be of type '%s'.", parameterName, requiredType);
+        return ResponseEntity.badRequest().body(message);
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)

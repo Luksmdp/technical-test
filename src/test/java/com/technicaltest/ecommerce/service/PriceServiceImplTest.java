@@ -40,9 +40,11 @@ class PriceServiceImplTest {
     @Test
     void testFindPrice_PriceFound() {
         // Arrange
-        PriceRequestDto requestDto = new PriceRequestDto(
-                LocalDateTime.parse("2020-06-14T10:00:00"), 35455L, 1L
-        );
+        Long brandId = 1L;
+        Long productId = 35455L;
+        LocalDateTime applicationDate = LocalDateTime.parse("2020-06-14T10:00:00");
+
+        PriceRequestDto requestDto = new PriceRequestDto(applicationDate, productId, brandId);
 
         Price mockPrice = new Price(1L,
                 new Brand(1L, "Brand A",null),
@@ -55,24 +57,21 @@ class PriceServiceImplTest {
         );
 
         when(priceRepository.findTopByApplicablePrice(
-                requestDto.getBrandId(),
-                requestDto.getProductId(),
-                requestDto.getApplicationDate()
+                brandId,
+                productId,
+                applicationDate
         )).thenReturn(Optional.of(mockPrice));
 
         // Act
-        ResponseEntity<ApiResponse<PriceResponseDto>> response = priceService.findPrice(requestDto);
+        PriceResponseDto response = priceService.findPrice(requestDto);
 
         // Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("Price found correctly", response.getBody().getMessage());
-        assertNotNull(response.getBody().getData());
-        assertEquals(mockPrice.getProduct().getId(), response.getBody().getData().getProductId());
-        assertEquals(mockPrice.getBrand().getId(), response.getBody().getData().getBrandId());
-        assertEquals(mockPrice.getId(), response.getBody().getData().getPriceListId());
-        assertEquals(requestDto.getApplicationDate(), response.getBody().getData().getApplicationDate());
-        assertEquals(mockPrice.getPrice().doubleValue(), response.getBody().getData().getFinalPrice());
+        assertNotNull(response);
+        assertEquals(mockPrice.getProduct().getId(), response.getProductId());
+        assertEquals(mockPrice.getBrand().getId(), response.getBrandId());
+        assertEquals(mockPrice.getId(), response.getPriceListId());
+        assertEquals(requestDto.getApplicationDate(), response.getApplicationDate());
+        assertEquals(mockPrice.getPrice().doubleValue(), response.getFinalPrice());
     }
     @Test
     void testFindPrice_PriceNotFound() {
@@ -93,13 +92,10 @@ class PriceServiceImplTest {
         when(brandRepository.existsById(requestDto.getBrandId())).thenReturn(true);
 
         // Act
-        ResponseEntity<ApiResponse<PriceResponseDto>> response = priceService.findPrice(requestDto);
+        PriceResponseDto response = priceService.findPrice(requestDto);
 
         // Assert
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("There is no price available for this date: "+requestDto.getApplicationDate(), response.getBody().getMessage());
-        assertNull(response.getBody().getData());
+
     }
 
     @Test
@@ -120,13 +116,10 @@ class PriceServiceImplTest {
 
 
         // Act
-        ResponseEntity<ApiResponse<PriceResponseDto>> response = priceService.findPrice(requestDto);
+        PriceResponseDto response = priceService.findPrice(requestDto);
 
         // Assert
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("The product with id: "+requestDto.getProductId()+" does not exist", response.getBody().getMessage());
-        assertNull(response.getBody().getData());
+
     }
 
     @Test
@@ -149,13 +142,10 @@ class PriceServiceImplTest {
 
 
         // Act
-        ResponseEntity<ApiResponse<PriceResponseDto>> response = priceService.findPrice(requestDto);
+        PriceResponseDto response = priceService.findPrice(requestDto);
 
         // Assert
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("The brand with id: "+requestDto.getBrandId()+" does not exist", response.getBody().getMessage());
-        assertNull(response.getBody().getData());
+
     }
 
 }

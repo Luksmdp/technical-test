@@ -7,6 +7,7 @@ import com.technicaltest.ecommerce.model.entity.Price;
 import com.technicaltest.ecommerce.repository.BrandRepository;
 import com.technicaltest.ecommerce.repository.PriceRepository;
 import com.technicaltest.ecommerce.repository.ProductRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ public class PriceServiceImpl implements PriceService {
     }
 
     @Override
-    public ResponseEntity<ApiResponse<PriceResponseDto>> findPrice(PriceRequestDto priceRequestDto) {
+    public PriceResponseDto findPrice(PriceRequestDto priceRequestDto) {
         log.info("Starting price lookup for Brand ID: {}, Product ID: {}, Application Date: {}",
                 priceRequestDto.getBrandId(), priceRequestDto.getProductId(), priceRequestDto.getApplicationDate());
 
@@ -37,32 +38,21 @@ public class PriceServiceImpl implements PriceService {
                 priceRequestDto.getApplicationDate());
 
         if (priceOptional.isEmpty()) {
-            if (!productRepository.existsById(priceRequestDto.getProductId())){
-                log.warn("The product with id: {} does not exist",priceRequestDto.getProductId());
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new ApiResponse<>("The product with id: "+priceRequestDto.getProductId()+" does not exist" ,null));
+            if (!productRepository.existsById(priceRequestDto.getProductId())) {
+                throw new EntityNotFoundException("The product with id: " + priceRequestDto.getProductId() + " does not exist");
             }
-            if (!brandRepository.existsById(priceRequestDto.getBrandId())){
-                log.warn("The brand with id: {} does not exist",priceRequestDto.getBrandId());
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new ApiResponse<>("The brand with id: "+priceRequestDto.getBrandId()+" does not exist",null));
+            if (!brandRepository.existsById(priceRequestDto.getBrandId())) {
+                throw new EntityNotFoundException("The brand with id: " + priceRequestDto.getBrandId() + " does not exist");
             }
-            log.warn("There is no price available for this date: {}",priceRequestDto.getApplicationDate());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ApiResponse<>("There is no price available for this date: "+priceRequestDto.getApplicationDate(),null));
+            throw new EntityNotFoundException("There is no price available for this date: " + priceRequestDto.getApplicationDate());
         }
 
-        PriceResponseDto priceResponseDto = new PriceResponseDto(priceOptional.get().getProduct().getId(),
-                priceOptional.get().getBrand().getId(),
-                priceOptional.get().getId(),
+        Price price = priceOptional.get();
+        return new PriceResponseDto(
+                price.getProduct().getId(),
+                price.getBrand().getId(),
+                price.getId(),
                 priceRequestDto.getApplicationDate(),
-                priceOptional.get().getPrice());
-
-        log.info("Price found: Product ID: {}, Brand ID: {}, Price List ID: {}, Price: {}, Application Date: {}",
-                priceResponseDto.getProductId(), priceResponseDto.getBrandId(),
-                priceResponseDto.getPriceListId(), priceResponseDto.getFinalPrice(), priceResponseDto.getApplicationDate());
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(new ApiResponse<>("Price found correctly",priceResponseDto));
+                price.getPrice());
     }
 }

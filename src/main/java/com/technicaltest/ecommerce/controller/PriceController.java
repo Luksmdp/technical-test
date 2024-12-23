@@ -10,9 +10,10 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.Valid;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -91,9 +92,17 @@ public class PriceController {
         log.info("Received request to find price with data: Brand ID: {}, Product ID: {}, Application Date: {}",
                 priceRequestDto.getBrandId(), priceRequestDto.getProductId(), priceRequestDto.getApplicationDate());
 
-        ResponseEntity<ApiResponse<PriceResponseDto>> response = priceService.findPrice(priceRequestDto);
-
-        log.info("Response for price lookup: Status: {}, Body: {}", response.getStatusCode(), response.getBody());
-        return response;
+        try {
+            PriceResponseDto responseDto = priceService.findPrice(priceRequestDto);
+            ApiResponse<PriceResponseDto> response = new ApiResponse<>("Price found correctly", responseDto);
+            return ResponseEntity.ok(response);
+        } catch (EntityNotFoundException ex) {
+            ApiResponse<PriceResponseDto> errorResponse = new ApiResponse<>(ex.getMessage(), null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        } catch (Exception ex) {
+            log.error("Unexpected error occurred: {}", ex.getMessage(), ex);
+            ApiResponse<PriceResponseDto> errorResponse = new ApiResponse<>("An unexpected error occurred", null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
     }
 }
